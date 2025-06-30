@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hug Animation</title>
+    <style>
+      body {
+        background: #f0f8ff;
+        overflow: hidden;
+        margin: 0;
+        height: 100vh;
+      }
+      .mall-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        background: url("gettyimages-1274504553-612x612.jpg") center
+          center/cover no-repeat;
+        filter: brightness(0.92) blur(1px);
+      }
+      .mall-name {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.5rem;
+        font-family: "Segoe UI", sans-serif;
+        color: #fff;
+        text-shadow: 2px 2px 8px #333;
+        z-index: 2;
+        letter-spacing: 2px;
+      }
+      .scene {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+      }
+      .character-img {
+        position: absolute;
+        bottom: 100px;
+        width: 180px;
+        height: 180px;
+        transition: left 1s, transform 1s, z-index 1s;
+        z-index: 2;
+        -webkit-user-select: none;
+        user-select: none;
+        pointer-events: none;
+      }
+      .character-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+      }
+      .girl {
+        left: 25vw;
+        z-index: 2;
+      }
+      .boy {
+        left: 55vw;
+        z-index: 2;
+      }
+      .name-tag {
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Segoe UI", sans-serif;
+        font-size: 1.2rem;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 3px 14px;
+        border-radius: 12px;
+        letter-spacing: 1px;
+        z-index: 3;
+        text-shadow: 1px 1px 4px #333;
+        pointer-events: none;
+      }
+      .bubble {
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        border-radius: 20px;
+        padding: 10px 18px;
+        border: 2px solid #ccc;
+        font-family: sans-serif;
+        font-size: 16px;
+        white-space: nowrap;
+        opacity: 1;
+        transition: opacity 0.5s;
+        z-index: 4;
+      }
+      .bubble.hide {
+        opacity: 0;
+      }
+      .boy .bubble {
+        top: -70px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      /* Hug animation */
+      .hug .girl {
+        left: 48vw;
+        transform: rotate(-10deg) scale(1.05);
+        z-index: 3;
+      }
+      .hug .boy {
+        left: 44vw;
+        transform: rotate(10deg) scale(1.05) scaleX(-1);
+        z-index: 4;
+      }
+      .hug .girl .character-photo {
+        box-shadow: 0 0 30px 0 #ffb6c1aa;
+      }
+      .hug .boy .character-photo {
+        box-shadow: 0 0 30px 0 #87ceebaa;
+      }
+      .heart {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: transparent;
+        left: 50vw;
+        top: 30vh;
+        pointer-events: none;
+        opacity: 0.8;
+        animation: fall 2s linear forwards;
+        z-index: 10;
+      }
+      .heart:before,
+      .heart:after {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 0;
+        width: 15px;
+        height: 24px;
+        background: #ff69b4;
+        border-radius: 15px 15px 0 0;
+        transform: rotate(-45deg);
+      }
+      .heart:after {
+        left: 0;
+        transform: rotate(45deg);
+      }
+      @keyframes fall {
+        to {
+          top: 90vh;
+          opacity: 0;
+        }
+      }
+      /* Door styles */
+      .door-container {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 20;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2);
+        flex-direction: column;
+      }
+      .double-door {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 440px;
+        height: 320px;
+        perspective: 1200px;
+      }
+      .door {
+        width: 220px;
+        height: 320px;
+        background: #b5651d;
+        border-radius: 10px;
+        position: relative;
+        box-shadow: 0 8px 32px #0006;
+        overflow: hidden;
+        transition: transform 1.2s cubic-bezier(0.77, 0, 0.18, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: left center;
+      }
+      .right-door {
+        border-left: 2px solid #a67c2e;
+        transform-origin: right center;
+      }
+      .left-door {
+        border-right: 2px solid #a67c2e;
+        transform-origin: left center;
+      }
+      .left-door.open {
+        transform: perspective(1200px) rotateY(-100deg) scale(1.05);
+      }
+      .right-door.open {
+        transform: perspective(1200px) rotateY(100deg) scale(1.05);
+      }
+      .door-knob {
+        position: absolute;
+        top: 50%;
+        width: 24px;
+        height: 24px;
+        background: #e2c275;
+        border-radius: 50%;
+        border: 3px solid #a67c2e;
+      }
+      .left-knob {
+        right: 18px;
+        transform: translateY(-50%);
+      }
+      .right-knob {
+        left: 18px;
+        transform: translateY(-50%);
+      }
+      .door-msg {
+        margin-top: 30px;
+        font-size: 1.4rem;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 16px 30px;
+        border-radius: 16px;
+        font-family: "Segoe UI", sans-serif;
+        opacity: 0;
+        transition: opacity 1s;
+      }
+      .door-msg.show {
+        opacity: 1;
+      }
+      #openDoorBtn {
+        display: none;
+        position: fixed;
+        left: 50%;
+        bottom: 60px;
+        transform: translateX(-50%);
+        z-index: 30;
+        padding: 16px 38px;
+        font-size: 1.3rem;
+        font-family: "Segoe UI", sans-serif;
+        background: #ff69b4;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px #0003;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      #openDoorBtn:hover {
+        background: #e0559e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mall-bg"></div>
+    <div class="mall-name">JTM Mall</div>
+    <div class="scene" id="scene">
+      <div class="character-img girl">
+        <img src="girl.png" alt="Pari" class="character-photo" />
+        <div class="bubble" id="girlBubble">gift ka hug chahiye</div>
+        <div class="name-tag">Pari</div>
+      </div>
+      <div class="character-img boy">
+        <img src="boy.png" alt="Mohit" class="character-photo" />
+        <div class="bubble" id="boyBubble">ha chaiye na</div>
+        <div class="name-tag">Mohit</div>
+      </div>
+    </div>
+    <button id="openDoorBtn">Open Door</button>
+    <div class="door-container" id="doorContainer">
+      <div class="double-door">
+        <div class="door left-door" id="leftDoor">
+          <div class="door-knob left-knob"></div>
+        </div>
+        <div class="door right-door" id="rightDoor">
+          <div class="door-knob right-knob"></div>
+        </div>
+      </div>
+      <div class="door-msg" id="doorMsg">
+        ajj ke liye itna hi bestie baki kabhi or
+      </div>
+    </div>
+    <script>
+      // Hide boy's bubble initially
+      document.getElementById("boyBubble").classList.add("hide");
+
+      // Show boy's reply after 1.5s
+      setTimeout(() => {
+        document.getElementById("boyBubble").classList.remove("hide");
+      }, 1500);
+
+      // Start hug after 2.5s
+      setTimeout(() => {
+        document.getElementById("girlBubble").classList.add("hide");
+        document.getElementById("boyBubble").classList.add("hide");
+        document.getElementById("scene").classList.add("hug");
+        startHeartRain();
+      }, 2500);
+
+      // Show open door button after hug and hearts
+      setTimeout(() => {
+        document.getElementById("openDoorBtn").style.display = "block";
+      }, 5000);
+
+      // Heart rain function
+      function startHeartRain() {
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            createHeart();
+          }, i * 150);
+        }
+      }
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = 45 + Math.random() * 10 + "vw";
+        heart.style.top = 30 + Math.random() * 10 + "vh";
+        heart.style.transform = `scale(${0.7 + Math.random() * 0.6}) rotate(${
+          Math.random() * 360
+        }deg)`;
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 2000);
+      }
+
+      // Door open logic (double door)
+      document.getElementById("openDoorBtn").onclick = function () {
+        document.getElementById("doorContainer").style.display = "flex";
+        setTimeout(() => {
+          document.getElementById("leftDoor").classList.add("open");
+          document.getElementById("rightDoor").classList.add("open");
+        }, 200);
+        setTimeout(() => {
+          document.getElementById("doorMsg").classList.add("show");
+        }, 1400);
+        this.style.display = "none";
+      };
+    </script>
+  </body>
+</html>
